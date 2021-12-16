@@ -1,0 +1,28 @@
+output.elasticsearch:
+  hosts: ["$ELASTICSEARCH_HOST"]
+  username: "$ELASTICSEARCH_USER"
+  password: "$ELASTICSEARCH_PASSWORD"
+
+heartbeat.scheduler:
+  limit: 10
+  
+heartbeat.config.monitors:
+  reload.enabled: true
+  reload.period: 1s
+
+heartbeat.monitors:
+  - type: http
+    id: $API_SERVICE_NAME-status
+    name: $API_SERVICE_NAME Status
+    service.name: $API_SERVICE_NAME
+    hosts: ["$API_URL"]
+    check.response.status: [200]
+    schedule: '@every 5s'
+  - type: http
+    id: $AUTH_SERVICE_NAME-status
+    name: $AUTH_SERVICE_NAME Status
+    service.name: $AUTH_SERVICE_NAME
+    hosts: [ "$AUTH_URL" ]
+    check.response.status: [ 200 ]
+    schedule: '@every 5s'
+

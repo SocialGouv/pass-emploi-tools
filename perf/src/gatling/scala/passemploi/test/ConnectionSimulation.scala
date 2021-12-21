@@ -6,8 +6,6 @@ import io.gatling.http.Predef._
 import io.gatling.http.protocol.HttpProtocolBuilder
 import passemploi.helpers.Helpers
 
-import scala.concurrent.duration.DurationInt
-
 class ConnectionSimulation extends Simulation {
   val authUrl: String = Helpers.getProperty("AUTH_URL", "http://localhost:8082")
   val apiUrl: String = Helpers.getProperty("API_URL", "http://localhost:5000")
@@ -26,6 +24,6 @@ class ConnectionSimulation extends Simulation {
   var durationInSeconds=Helpers.getProperty("DURATION_IN_SECONDS", "2").toInt
   setUp(
     scn.inject(
-      constantUsersPerSec(usersPerSec).during(durationInSeconds.seconds)
+      rampUsersPerSec(1).to(100).during(300)
     ).protocols(httpProtocol))
 }

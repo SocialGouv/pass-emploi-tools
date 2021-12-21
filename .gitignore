@@ -1,1 +1,6 @@
 *.iml
+
+
+perf/.env
+perf/build
+perf/.gradle

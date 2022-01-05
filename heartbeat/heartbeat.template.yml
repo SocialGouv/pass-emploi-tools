@@ -19,6 +19,13 @@ heartbeat.monitors:
     check.response.status: [200]
     schedule: '@every 5s'
   - type: http
+    id: $FRONT_SERVICE_NAME-status
+    name: $FRONT_SERVICE_NAME Status
+    service.name: $FRONT_SERVICE_NAME
+    hosts: [ "$FRONT_URL" ]
+    check.response.status: [ 200 ]
+    schedule: '@every 5s'
+  - type: http
     id: $AUTH_SERVICE_NAME-status
     name: $AUTH_SERVICE_NAME Status
     service.name: $AUTH_SERVICE_NAME

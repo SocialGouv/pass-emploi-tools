@@ -5,8 +5,10 @@ import io.gatling.core.structure.ScenarioBuilder
 import io.gatling.http.Predef._
 import io.gatling.http.protocol.HttpProtocolBuilder
 import passemploi.helpers.Helpers
+import io.gatling.core.Predef.{Node, css}
+import io.gatling.http.Predef.{headerRegex, http, status}
 
-class ConnectionSimulation extends Simulation {
+class PremierScenario extends Simulation {
   val authUrl: String = Helpers.getProperty("AUTH_URL", "http://localhost:8082")
   val apiUrl: String = Helpers.getProperty("API_URL", "http://localhost:5000")
   val webUrl: String = Helpers.getProperty("WEB_URL", "http://localhost:3000")
@@ -20,9 +22,21 @@ class ConnectionSimulation extends Simulation {
 
   val scn: ScenarioBuilder = scenario("Se connecter")
     .exec(Helpers.getAccessToken(authUrl, webUrl, clientSecret))
-  
-  var usersPerSec=Helpers.getProperty("USERS_PER_SEC", "1").toDouble
-  var durationInSeconds=Helpers.getProperty("DURATION_IN_SECONDS", "2").toInt
+    .exec {
+      http("récupérer les jeunes")
+        .get(s"${apiUrl}/conseillers/41/jeunes")
+        .header("Authorization", session => s"Bearer ${ session("token").as[String] }")
+        .check(status.is(200))
+        .check(bodyString.saveAs("bobody"))
+    }
+    .exec { session =>
+      println("bobody")
+      println(session("bobody").as[String])
+      session
+    }
+
+  var usersPerSec = Helpers.getProperty("USERS_PER_SEC", "1").toDouble
+  var durationInSeconds = Helpers.getProperty("DURATION_IN_SECONDS", "2").toInt
   setUp(
     scn.inject(
       rampUsersPerSec(1).to(1).during(1)

@@ -25,11 +25,6 @@ object Helpers {
           })
           .saveAs("loginUrl"))
     }
-      .exec { session =>
-        println("LOGIN URL")
-        println(session("loginUrl").as[String])
-        session
-      }
       .exec {
         http("se logger")
           .post("${loginUrl}")
@@ -40,23 +35,13 @@ object Helpers {
           .check(status.is(302))
           .check(headerRegex("location", "code=(.*)").ofType[String].saveAs("code"))
       }
-      .exec { session =>
-        println("CODE")
-        println(session("code").as[String])
-        session
-      }
       .exec {
-        http("échanger le code")
+        http("échanger le code contre le token")
           .post(s"${authUrl}/auth/realms/pass-emploi/protocol/openid-connect/token")
           .body(StringBody(session => s"grant_type=authorization_code&client_id=pass-emploi-web&client_secret=${clientSecret}&code=${session("code").as[String]}&redirect_uri=${webUrl}%2Fapi%2Fauth%2Fcallback%2Fkeycloak&code_verifier=aFrF4xUrQQm_vfivg2pcl19uer2AorbIjCRpdLWQZqwYYSfZVh-7tbJTOUrWrNV6-q10Fqw4x08qnmywqpO2CXiYThthaq_FFfDMZUsfs557wyik9.7jEJ-k-3FYuEd4"))
           .header("Content-Type", "application/x-www-form-urlencoded")
           .check(status.is(200))
           .check(jsonPath("$.access_token").saveAs("token"))
       }
-      .exec { session =>
-      println("TOKEN")
-      println(session("token").as[String])
-      session
-    }
   }
 }

@@ -33,9 +33,47 @@ class PremierScenario extends Simulation {
         .header("Authorization", session => s"Bearer ${token}")
         .check(status.is(200))
     }
+    .exec {
+      http("récupérer un jeune")
+        .get(s"${apiUrl}/jeunes/1")
+        .header("Authorization", session => s"Bearer ${token}")
+        .check(status.is(200))
+    }
+    .exec {
+      http("récupérer les actions du jeune")
+        .get(s"${apiUrl}/jeunes/1/actions")
+        .header("Authorization", session => s"Bearer ${token}")
+        .check(status.is(200))
+    }
+    .exec {
+      http("récupérer les rendez-vous du jeune")
+        .get(s"${apiUrl}/jeunes/1/rendezvous")
+        .header("Authorization", session => s"Bearer ${token}")
+        .check(status.is(200))
+    }
+    .exec {
+      http("enregistrer une action")
+        .post(s"${apiUrl}/conseillers/41/jeunes/1/action")
+        .body(StringBody("""{"content":"test", "comment":"test"}""")).asJson
+        .header("Authorization", session => s"Bearer ${token}")
+        .check(status.is(201))
+        .check(jsonPath("$.id").saveAs("id_action"))
+    }
+    .exec {
+      http("récupérer l'action du jeune")
+        .get(session => s"${apiUrl}/actions/${session("id_action").as[String]}")
+        .header("Authorization", session => s"Bearer ${token}")
+        .check(status.is(200))
+    }
+    .exec {
+      http("supprimer l'action du jeune")
+        .delete(session => s"${apiUrl}/actions/${session("id_action").as[String]}")
+        .header("Authorization", session => s"Bearer ${token}")
+        .check(status.is(204))
+    }
 
-  val usersPerSec: Double = Helpers.getProperty("USERS_PER_SEC", "100").toDouble
-  val durationInSeconds: Int = Helpers.getProperty("DURATION_IN_SECONDS", "60").toInt
+  val usersPerSec: Double = Helpers.getProperty("USERS_PER_SEC", "10").toDouble
+  val durationInSeconds: Int = Helpers.getProperty("DURATION_IN_SECONDS", "1").toInt
 
   setUp(
     authentification.inject(atOnceUsers(1))

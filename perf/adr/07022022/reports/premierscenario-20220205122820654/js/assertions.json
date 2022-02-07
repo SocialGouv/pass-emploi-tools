@@ -1,0 +1,10 @@
+{
+  "simulation": "passemploi.test.PremierScenario",
+  "simulationId": "premierscenario",
+  "start": 1644064100654,
+  "description": "",
+  "scenarios": ["Se connecter", "Premier Scenario"],
+  "assertions": [
+
+  ]
+}

@@ -29,31 +29,31 @@ class PremierScenario extends Simulation {
   val scn: ScenarioBuilder = scenario("Premier Scenario")
     .exec {
       http("récupérer les jeunes")
-        .get(s"${apiUrl}/conseillers/41/jeunes")
+        .get(s"${apiUrl}/conseillers/1/jeunes")
         .header("Authorization", session => s"Bearer ${token}")
         .check(status.is(200))
     }
     .exec {
       http("récupérer un jeune")
-        .get(s"${apiUrl}/jeunes/1")
+        .get(s"${apiUrl}/jeunes/hermione")
         .header("Authorization", session => s"Bearer ${token}")
         .check(status.is(200))
     }
     .exec {
       http("récupérer les actions du jeune")
-        .get(s"${apiUrl}/jeunes/1/actions")
+        .get(s"${apiUrl}/jeunes/hermione/actions")
         .header("Authorization", session => s"Bearer ${token}")
         .check(status.is(200))
     }
     .exec {
       http("récupérer les rendez-vous du jeune")
-        .get(s"${apiUrl}/jeunes/1/rendezvous")
+        .get(s"${apiUrl}/jeunes/hermione/rendezvous")
         .header("Authorization", session => s"Bearer ${token}")
         .check(status.is(200))
     }
     .exec {
       http("enregistrer une action")
-        .post(s"${apiUrl}/conseillers/41/jeunes/1/action")
+        .post(s"${apiUrl}/conseillers/1/jeunes/hermione/action")
         .body(StringBody("""{"content":"test", "comment":"test"}""")).asJson
         .header("Authorization", session => s"Bearer ${token}")
         .check(status.is(201))
@@ -72,8 +72,8 @@ class PremierScenario extends Simulation {
         .check(status.is(204))
     }
 
-  val usersPerSec: Double = Helpers.getProperty("USERS_PER_SEC", "10").toDouble
-  val durationInSeconds: Int = Helpers.getProperty("DURATION_IN_SECONDS", "1").toInt
+  val usersPerSec: Double = Helpers.getProperty("USERS_PER_SEC", "100").toDouble
+  val durationInSeconds: Int = Helpers.getProperty("DURATION_IN_SECONDS", "60").toInt
 
   setUp(
     authentification.inject(atOnceUsers(1))

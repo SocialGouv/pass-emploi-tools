@@ -28,8 +28,8 @@ object Helpers {
       .exec {
         http("se logger")
           .post("${loginUrl}")
-          .formParam("username", "41")
-          .formParam("password", "41")
+          .formParam("username", "1")
+          .formParam("password", "1")
           .formParam("credentialId", "")
           .disableFollowRedirect
           .check(status.is(302))

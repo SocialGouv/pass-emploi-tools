@@ -32,4 +32,11 @@ heartbeat.monitors:
     hosts: [ "$AUTH_URL" ]
     check.response.status: [ 200 ]
     schedule: '@every 5s'
+  - type: http
+    id: Wordpress-status
+    name: Wordpress Status
+    hosts: [ "https://doc.pass-emploi.beta.gouv.fr/legal/", "https://doc.pass-emploi.beta.gouv.fr/support-milo/", "https://doc.pass-emploi.beta.gouv.fr/support-pe/" ]
+    check.response.status: [ 200 ]
+    schedule: '@every 60s'
+    enabled: $WORDPRESS_ENABLED
 

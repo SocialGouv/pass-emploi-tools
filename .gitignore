@@ -5,3 +5,5 @@
 perf/.env
 perf/build
 perf/.gradle
+*.secret
+commandes-secretes.md

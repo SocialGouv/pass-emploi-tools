@@ -17,11 +17,6 @@
 ##
 ################################################################
 
-## GC configuration
--XX:+UseConcMarkSweepGC
--XX:CMSInitiatingOccupancyFraction=75
--XX:+UseCMSInitiatingOccupancyOnly
-
 ## Locale
 # Set the locale language
 #-Duser.language=en

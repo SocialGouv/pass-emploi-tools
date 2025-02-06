@@ -1,0 +1,28 @@
+
+x	GET /health
+------------------------------------------------------------------------------------------------------
+
+x	GET /jeunes/:id/milo/accueil
+
+x	GET /jeunes/:idJeune
+x	GET /jeunes/:idJeune/favoris/
+x	GET /jeunes/:idJeune/recherches
+
+x	GET /jeunes/:idJeune/conseillers									# CONSEILLER ONLY
+x	GET /jeunes/:idJeune/recherches/suggestions
+x	GET /jeunes/:idJeune/pole-emploi/accueil
+x	GET /jeunes/:idJeune/pole-emploi/mon-suivi
+x	GET /jeunes/:idJeune/pole-emploi/cv
+
+x	GET /referentiels/pole-emploi/catalogue-demarches					# <== ATTENTION, 200 + EMPTY
+x	GET /referentiels/pole-emploi/types-demarches						# <== demande accès sur API externe
+
+?	POST /conseillers/pole-emploi/beneficiaires/notifier-message		# pertinent ?
+!	POST /conseillers/pole-emploi/jeunes
+
+x	GET /v2/jeunes/:idJeune/home/agenda/pole-emploi
+x	GET /v2/jeunes/:idJeune/home/demarches
+
+-----------------------------------------------------------------------------------------------------
+
+x	GET /jeunes/:idJeune/pole-emploi/idp-token   						# utilise api auth

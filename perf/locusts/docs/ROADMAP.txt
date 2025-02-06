@@ -1,0 +1,6 @@
+- Mettre un CI/CD avec l'API et PostgreSQL et un test flood
+- Mettre en place une plateforme temporaire sur scalingo
+- Faire deux dockers : API + PostgreSQL et lancer les tests dessus
+
+- Mettre en place des tests sur certains méthodes précises (listing avec Malek)
+- Mettre en place des tests sur l'ensemble des méthodes (flood)

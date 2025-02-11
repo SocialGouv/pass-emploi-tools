@@ -108,7 +108,7 @@ async def openid_delete():
 
 
 # ----------- preprod -------------
-@app.get("/auth/realms/pass-emploi/protocol/openid-connect/certs")
+#@app.get("/auth/realms/pass-emploi/protocol/openid-connect/certs")
 async def openid_certs_preprod():
     return {
         "keys" : [{
@@ -126,7 +126,7 @@ async def openid_certs_preprod():
         }]}
 
 # ----------- prod -------------
-# @app.get("/auth/realms/pass-emploi/protocol/openid-connect/certs")
+@app.get("/auth/realms/pass-emploi/protocol/openid-connect/certs")
 async def openid_certs_prod():
     return {"keys":[{
         "kty":"RSA",

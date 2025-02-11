@@ -56,18 +56,29 @@ class APIUser(HttpUser):
         if name is None:
             name = url
         with self.client.get(url, catch_response=True, name=name) as response:
+            print(f"[DEBUG] shoot {url}")
             if traceback is not None:
                 traceback(response)
             return response
 
+    ##
+    ##
+    ##  TODO : Maybe switch to Error 5xx for failure()
+    ##         5xx => LB can't reach the app
+    ##         another error code like 4xx isn't not really useful
+    ##
     def traceback(self, response):
         status_code = response.status_code
         if status_code == HTTPStatus.OK:
             response.success()
+        elif status_code == 429:
+            response.success()
         elif status_code == 0:
-            response.failure(f"Failure : No Data (aborted)")
+            response.failure(f"Failure: No Data (aborted)")
+        elif status_code >= 500:   # Bad Gateway or Gateway timeout
+            response.failure(f"Failure: Cannot reach app : {HTTPStatusReason(status_code)} (HTTP Code {status_code})")
         else:
-            response.failure(f"Failure : {HTTPStatusReason(status_code)} (HTTP Code {status_code})")
+            response.failure(f"Failure: {HTTPStatusReason(status_code)} (HTTP Code {status_code}) (*)")
 
     # ----------------------------------------------------------------------------------
 
@@ -96,6 +107,19 @@ class APIUser(HttpUser):
     def health(self):
         self.shoot(url="/health", traceback=self.traceback)
 
+
+    # -----------------------------------------------------------------
+    # GET openid (simulator)
+    # -----------------------------------------------------------------
+    @task
+    @tag("openid")
+    def openid(self):
+        url = "http://127.0.0.1:8080/issuer/protocol/openid-connect/token"
+        with self.client.post(url, catch_response=True, name="openid (backbone)") as response:
+            print(f"[DEBUG] shoot {url}")
+            self.traceback(response)
+            return response
+
     """
     # ------------------------------------------------------------------
     # GET /jeunes/:id/milo/accueil
@@ -113,6 +137,7 @@ class APIUser(HttpUser):
     # GET /jeunes/:idJeune
     # ------------------------------------------------------------------
     @task
+    @tag("noapi")
     def jeunes_detail(self):
         test_name = "/jeunes (detail)"
         url  = f"/jeunes/{self.user_id}"
@@ -145,6 +170,7 @@ class APIUser(HttpUser):
     # RateLimit = 429
     # --------------------------------------------------------------------
     @task
+    @tag("startup")
     def jeunes_agenda_poleemploi(self):
         test_name = "/jeunes/:id/home/agenda/pole-emploi"
         url = f"/v2/jeunes/{self.user_id}/home/agenda/pole-emploi?maintenant=2025-01-01"
@@ -181,6 +207,8 @@ class APIUser(HttpUser):
     # RateLimit = 429
     # -----------------------------------------------
     @task
+    @tag("startup")
+    @tag("one")
     def jeunes_pole_emploi_accueil(self):
         test_name = "/jeunes/:id/pole-emploi/accueil"
         url = f"/jeunes/{self.user_id}/pole-emploi/accueil?maintenant=2025-01-01"
@@ -193,6 +221,7 @@ class APIUser(HttpUser):
     # RateLimit = 429
     # -----------------------------------------------
     @task
+    @tag("startup")
     def jeunes_pole_emploi_mon_suivi(self):
         test_name = "/jeunes/:id/pole-emploi/mon-suivi"
         url = f"/jeunes/{self.user_id}/pole-emploi/mon-suivi?dateDebut=2025-01-01"
@@ -214,13 +243,11 @@ class APIUser(HttpUser):
     # GET /v2/jeunes/:idJeune/home/demarches
     # ---------------------------------------------------
     @task
+    @tag("startup")
     def jeunes_home_demarches(self):
         test_name = "/v2/jeunes/:id/home/demarches"
         url = f"/v2/jeunes/{self.user_id}/home/demarches"
         self.shoot(url=url, name=test_name, traceback=self.traceback)
-
-
-
 
     # ----------------------------------------------------
     # GET /referentiels/pole-emploi/catalogue-demarches
@@ -253,7 +280,7 @@ class APIUser(HttpUser):
     # GET /jeunes/:id/pole-emploi/idp-token
     # --------------------------------------------------------------
     @task
-    @tag("test")
+    @tag("startup")
     def jeunes_pole_emploi_idp_token(self):
         test_name = "/jeunes/:id/pole-emploi/idp-token"
         url = f"/jeunes/{self.user_id}/pole-emploi/idp-token"
@@ -274,9 +301,15 @@ class APIUser(HttpUser):
 
 class APILoadShape(LoadTestShape):
 
+    """
+    user_count_leap = 10
+    user_spawn_rate = 10
+    user_spawn_incr = 25
+    """
     user_count_leap = 1
     user_spawn_rate = 1
     user_spawn_incr = 2
+
 
     def __init__(self):
         print("calculating user_spawn_rate")
@@ -295,8 +328,8 @@ class APILoadShape(LoadTestShape):
         user_count = self.get_current_user_count()
 
         # decrease load (quickly)
-        if ratio > 0.2:
-            print(f"[tick] (warning) stats ratio > 0.2 : {ratio}")
+        if ratio > 0.8:
+            print(f"[tick] (warning) stats ratio > 0.8 : {ratio}")
             user_count -= (self.user_count_leap / 2)
             if user_count <= 0:
                 user_count = 1

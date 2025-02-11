@@ -2,13 +2,22 @@
 
 Lazy API simulator
 
-(works only with userId '20a2133e-94b7-4ef0-a530-9e11d0a7d093')
+(works only with userId `e88a3b2a-e994-11ed-a05b-0242ac120003`)
 
 ## Installation API Simulator
 
 ```sh
 make start
 ```
+
+## Configuration API Simulator 
+
+```
+FQDN="http://127.0.0.1:8080"
+or 
+FQDN="https://myapi.passemploi.gouv.fr"   # example
+```
+
 
 ## Configuration PassEmploi API
 

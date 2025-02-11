@@ -1,3 +1,4 @@
+import os
 import uvicorn
 from fastapi import FastAPI
 
@@ -6,6 +7,8 @@ app = FastAPI()
 #
 # uvicorn api-simulator:app --port 8080 --workers 10 
 #
+
+os.getenv("FQDN", "http://127.0.0.1:8080")
 
 
 ##################################################
@@ -17,7 +20,7 @@ app = FastAPI()
 @app.get("/issuer/.well-known/openid-configuration")
 async def openid_config():
     return {
-        "authorization_endpoint"     : "http://127.0.0.1:8080/auth/realms/pass-emploi/protocol/openid-connect/auth",
+        "authorization_endpoint"     : f"${FQDN}/auth/realms/pass-emploi/protocol/openid-connect/auth",
         "claims_parameter_supported" : False,
         "claims_supported"           : [
             "sub",
@@ -34,15 +37,15 @@ async def openid_config():
             "iss"
         ],
         "code_challenge_methods_supported" : ["S256","plain"],
-        "end_session_endpoint"             : "http://127.0.0.1:8080/auth/realms/pass-emploi/protocol/openid-connect/logout",
+        "end_session_endpoint"             : f"${FQDN}/auth/realms/pass-emploi/protocol/openid-connect/logout",
         "grant_types_supported"            : [
             "implicit",
             "authorization_code",
             "refresh_token",
             "urn:ietf:params:oauth:grant-type:token-exchange"
         ],
-        "issuer"    : "http://127.0.0.1:8080/auth/realms/pass-emploi",
-        "jwks_uri"  : "http://127.0.0.1:8080/auth/realms/pass-emploi/protocol/openid-connect/certs",
+        "issuer"    : f"${FQDN}/auth/realms/pass-emploi",
+        "jwks_uri"  : f"${FQDN}/auth/realms/pass-emploi/protocol/openid-connect/certs",
         "authorization_response_iss_parameter_supported" : True,
         "response_modes_supported"                       : [
             "form_post",
@@ -70,12 +73,12 @@ async def openid_config():
             "none"
         ],
         "token_endpoint_auth_signing_alg_values_supported" : ["HS256","RS256","PS256","ES256","EdDSA"],
-        "token_endpoint" : "http://127.0.0.1:8080/auth/realms/pass-emploi/protocol/openid-connect/token",
+        "token_endpoint" : f"${FQDN}/auth/realms/pass-emploi/protocol/openid-connect/token",
         "id_token_signing_alg_values_supported" : ["PS256","RS256"],
-        "pushed_authorization_request_endpoint" : "http://127.0.0.1:8080/auth/realms/pass-emploi/protocol/openid-connect/ext/par/request",
+        "pushed_authorization_request_endpoint" : f"${FQDN}/auth/realms/pass-emploi/protocol/openid-connect/ext/par/request",
         "request_parameter_supported" : False,
         "request_uri_parameter_supported" : False,
-        "userinfo_endpoint" : "http://127.0.0.1:8080/auth/realms/pass-emploi/protocol/openid-connect/userinfo",
+        "userinfo_endpoint" : f"${FQDN}/auth/realms/pass-emploi/protocol/openid-connect/userinfo",
         "claim_types_supported":["normal"]
     }
 
@@ -322,7 +325,7 @@ async def immersion_contact_establishment():
 if __name__ == "__main__":
     uvicorn.run(
         app,
-        host="127.0.0.1",
+        host="0.0.0.0",
         port=8080,
         # debug=False,
         access_log=False

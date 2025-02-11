@@ -8,7 +8,7 @@ app = FastAPI()
 # uvicorn api-simulator:app --port 8080 --workers 10 
 #
 
-os.getenv("FQDN", "http://127.0.0.1:8080")
+FQDN = os.getenv("FQDN", "http://127.0.0.1:8080")
 
 
 ##################################################

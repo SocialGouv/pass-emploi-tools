@@ -4,18 +4,16 @@ Lazy API simulator
 
 (works only with userId '20a2133e-94b7-4ef0-a530-9e11d0a7d093')
 
-
 ## Installation API Simulator
 
 ```sh
-pip install -r requirements.txt
-uvicorn app:app --port 8080 --workers 10
+make start
 ```
 
 ## Configuration PassEmploi API
 
 edit .environment and change this variables :
- 
+
 ```sh
 OIDC_ISSUER_API_URL=http://127.0.0.1:8080/api
 OIDC_ISSUER_URL=http://127.0.0.1:8080/issuer

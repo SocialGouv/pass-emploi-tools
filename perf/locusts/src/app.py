@@ -65,7 +65,7 @@ class APIUser(HttpUser):
     ##
     ##  TODO : Maybe switch to Error 5xx for failure()
     ##         5xx => LB can't reach the app
-    ##         another error code like 4xx isn't not really useful
+    ##         another error code like 4xx isn't really useful
     ##
     def traceback(self, response):
         status_code = response.status_code
@@ -208,7 +208,7 @@ class APIUser(HttpUser):
     # -----------------------------------------------
     @task
     @tag("startup")
-    @tag("one")
+    @tag("only-one")
     def jeunes_pole_emploi_accueil(self):
         test_name = "/jeunes/:id/pole-emploi/accueil"
         url = f"/jeunes/{self.user_id}/pole-emploi/accueil?maintenant=2025-01-01"

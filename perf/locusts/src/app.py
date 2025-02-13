@@ -1,27 +1,15 @@
-from locust import (
-    FastHttpUser,
-    HttpUser,
-    LoadTestShape,
-    TaskSet,
-    SequentialTaskSet,
-    constant_throughput,
-    between,
-    Events,
-    events,
-    task,
-    tag
-)
-
+import asyncio
 import os
 import sys
 import uuid
-import asyncio
-import gevent
-
-from http import HTTPStatus
 from contextlib import suppress
+from http import HTTPStatus
 
+import gevent
 import stresstest.events
+from locust import (Events, FastHttpUser, HttpUser, LoadTestShape,
+                    SequentialTaskSet, TaskSet, between, constant_throughput,
+                    events, tag, task)
 
 
 def HTTPStatusReason(http_code):

@@ -322,7 +322,7 @@ async def immersion_contact_establishment():
 
 @app.get('/milo/operateurs/sessions')
 async def milo_operateur_sessions():
-    return {}
+    return None
 
 
 

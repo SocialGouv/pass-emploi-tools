@@ -34,10 +34,12 @@ def HTTPStatusReason(http_code):
 
 # ---------------------------------------
 #           Tasks 
-#         (common)
 # ---------------------------------------
 
-class MainTaskSet(TaskSet):
+
+# Base is used only for internal fonctions (not tasks)
+# If you use @task, push your fonction into CommonTaskSet
+class BaseTaskSet(TaskSet):
 
     def shoot(self, url, name=None, traceback=None):
         if name is None:
@@ -56,8 +58,11 @@ class MainTaskSet(TaskSet):
         status_code = response.status_code
         if status_code == HTTPStatus.OK:
             response.success()
-        elif status_code == 429:
+        elif status_code == HTTPStatus.CREATED:
             response.success()
+        elif status_code == HTTPStatus.TOO_MANY_REQUESTS:
+            response.success()   # success to avoid limit rate error 
+            # (TODO: check if still necessary, used for some endpoint with limit rate)
         elif status_code == 0:
             response.failure(f"Failure: No Data (aborted)")
         elif status_code >= 500:   # Bad Gateway or Gateway timeout
@@ -66,49 +71,12 @@ class MainTaskSet(TaskSet):
             response.failure(f"Failure: {HTTPStatusReason(status_code)} (HTTP Code {status_code}) (*)")
 
 
-
-
-# ---------------------------------------
-#           Tasks 
-#         (specific)
-# ---------------------------------------
-
-# Specific Task for User 1 (FT)
-class Tasks1(MainTaskSet):
-
-    @task
-    def detail(self):
-        name =  "/jeunes (detail)"
-        url  = f"/jeunes/{self.client.user_id}"
-        self.shoot(url=url, name=name, traceback=self.traceback)
-
-    @task
-    def accueil(self):
-        name =  "/jeunes/:id/pole-emploi/accueil?maintenant=2025-01-01"
-        url  = f"/jeunes/{self.client.user_id}/pole-emploi/accueil?maintenant=2025-01-01"
-        self.shoot(url=url, name=name, traceback=self.traceback)
-
-    @task
-    def demarches(self):
-        name =  "/v2/jeunes/:id/home/demarches"
-        url  = f"/v2/jeunes/{self.client.user_id}/home/demarches"
-        self.shoot(url=url, name=name, traceback=self.traceback)
-
-    @task
-    def agenda(self):
-        name =  "/v2/jeunes/:id/home/agenda/pole-emploi"
-        url  = f"/v2/jeunes/{self.client.user_id}/home/agenda/pole-emploi?maintenant=2025-01-01"
-        self.shoot(url=url, name=name, traceback=self.traceback)
-
-    @task
-    def monsuivi(self):
-        name =  "/jeunes/:id/pole-emploi/mon-suivi?dateDebut=2025-01-01"
-        url  = f"/jeunes/{self.client.user_id}/pole-emploi/mon-suivi?dateDebut=2025-01-01"
-        self.shoot(url=url, name=name, traceback=self.traceback)
+# Common is used only for common tasks between users profiles
+class CommonTaskSet(TaskSet):
 
     @task
     def favori(self):
-        name =  "/jeunes/:id/favoris/offres-emploi (POST)"
+        name = f"/jeunes/{self.client.user_id}/favoris/offres-emploi"
         url  = f"/jeunes/{self.client.user_id}/favoris/offres-emploi"
         data = {
             "idOffre": str(uuid.uuid4()),
@@ -125,14 +93,12 @@ class Tasks1(MainTaskSet):
             "origineNom": "string",
             "origineLogo": "string"
         }
-        with self.client.post(url, data=data, catch_response=True, name=name) as response:
+        with self.client.post(url, json=data, catch_response=True, name=name) as response:
             self.traceback(response)
-            print(" FAVORI POST >>>>", response.content)
-            exit()
 
     @task
     def recherche(self):
-        name =  "/jeunes/:id/recherches/offres-emploi (POST)"
+        name = f"/jeunes/{self.client.user_id}/recherches/offres-emploi"
         url  = f"/jeunes/{self.client.user_id}/recherches/offres-emploi"
         data = {
             "titre": "string",
@@ -150,28 +116,65 @@ class Tasks1(MainTaskSet):
                 "rayon": 0
             }
         }
-        with self.client.post(url, data=data, catch_response=True, name=name) as response:
+        with self.client.post(url, json=data, catch_response=True, name=name) as response:
             self.traceback(response)
-            print("RECHERCHE POST >>>>", response.content)
-            exit()
+
+
+
+# ---------------------------------------
+#           Tasks 
+#         (specific)
+# ---------------------------------------
+
+# Specific Task for User 1 (FT)
+class TasksUser1(BaseTaskSet, CommonTaskSet):
+
+    @task
+    def detail(self):
+        name = f"/jeunes/{self.client.user_id}"
+        url  = f"/jeunes/{self.client.user_id}"
+        self.shoot(url=url, name=name, traceback=self.traceback)
+
+    @task
+    def accueil(self):
+        name = f"/jeunes/{self.client.user_id}/pole-emploi/accueil (+parameters)"
+        url  = f"/jeunes/{self.client.user_id}/pole-emploi/accueil?maintenant=2025-01-01"
+        self.shoot(url=url, name=name, traceback=self.traceback)
+
+    @task
+    def demarches(self):
+        name = f"/v2/jeunes/{self.client.user_id}/home/demarches"
+        url  = f"/v2/jeunes/{self.client.user_id}/home/demarches"
+        self.shoot(url=url, name=name, traceback=self.traceback)
+
+    @task
+    def agenda(self):
+        name = f"/v2/jeunes/{self.client.user_id}/home/agenda/pole-emploi (+parameters)"
+        url  = f"/v2/jeunes/{self.client.user_id}/home/agenda/pole-emploi?maintenant=2025-01-01"
+        self.shoot(url=url, name=name, traceback=self.traceback)
+
+    @task
+    def monsuivi(self):
+        name = f"/jeunes/{self.client.user_id}/pole-emploi/mon-suivi (+parameters)"
+        url  = f"/jeunes/{self.client.user_id}/pole-emploi/mon-suivi?dateDebut=2025-01-01"
+        self.shoot(url=url, name=name, traceback=self.traceback)
 
 
 
 # Specific Task for User 2 (MILO)
-class Tasks2(MainTaskSet):
+class TasksUser2(BaseTaskSet, CommonTaskSet):
 
     @task
     def monsuivi(self):
-        name =  "/jeunes/milo/:id/mon-suivi?dateDebut=2025-01-01&dateFin=2025-01-31"
+        name = f"/jeunes/milo/{self.client.user_id}/mon-suivi (+parameters)"
         url  = f"/jeunes/milo/{self.client.user_id}/mon-suivi?dateDebut=2025-01-01&dateFin=2025-01-31"
         self.shoot(url=url, name=name, traceback=self.traceback)
 
     @task
     def accueil(self):
-        name =  "/jeunes/:id/milo/accueil?maintenant=2025-01-01"
+        name = f"/jeunes/{self.client.user_id}/milo/accueil (+parameters)"
         url  = f"/jeunes/{self.client.user_id}/milo/accueil?maintenant=2025-01-01"
         self.shoot(url=url, name=name, traceback=self.traceback)
-
 
 
 
@@ -181,9 +184,9 @@ class Tasks2(MainTaskSet):
 # ---------------------------------------
 
 # Define Profil for User 1 (FT)
-class User1(HttpUser):
+class ProfilUser1(HttpUser):
 
-    tasks = [Tasks1]
+    tasks = [TasksUser1]
 
     def on_start(self):
         self.client.user_id = os.getenv("USERID_1")
@@ -194,9 +197,9 @@ class User1(HttpUser):
         self.client.headers["accept"] = "*/*"
 
 # Definie Profil for User 2 (MILO)
-class User2(HttpUser):
+class ProfilUser2(HttpUser):
 
-    tasks = [Tasks2]
+    tasks = [TasksUser2]
 
     def on_start(self):
         self.client.user_id = os.getenv("USERID_2")
@@ -210,51 +213,38 @@ class User2(HttpUser):
 
 # -------------------------------------------
 #       LoadTestShape
-#       increase number of users to reach 
-#       a specific fail_ratio
 # --------------------------------------------
+
+# -- live patching -------------------------------------------------------------------
+# tick() is executed each second
+# into locust.runner.shape_worker, gevent.sleep is runned with the parameter max(1.0)
+# if you want to increase the wait before each loop, we need to patch gevent.sleep (used into shape_worker)...
+gevent.sleep_orig = gevent.sleep
+def sleep_faster(*args, **kwargs):
+    return gevent.sleep_orig(0.500)
+# ------------------------------------------------------------------------------------
 
 class APILoadShape(LoadTestShape):
 
-    """
-    # large load average
-    user_count_leap = 10
-    user_spawn_rate = 10
-    user_spawn_incr = 25
-    """
-    # small load average
-    user_count_leap = 1
-    user_spawn_rate = 1
-    user_spawn_incr = 2
-
-    # users class handler
-    users_handlers = [User1, User2]
-
-
-    def __init__(self):
-        print("calculating user_spawn_rate")
-        self.user_spawn_rate = self.user_count_leap * self.user_spawn_incr
-
     def tick(self):
+
+        # patch only here. otherwise all gevent in locust will be impacted
+        gevent.sleep = sleep_faster
+
         print(f"[tick] current user count : {self.get_current_user_count()}")
-        print(f"[tick] current spawn rate : {self.user_spawn_rate}")
         print(f"[tick] stats num requests : {self.runner.stats.total.num_requests}")
         print(f"[tick] stats num failures : {self.runner.stats.total.num_failures}")
 
-        ratio = 0
-        if self.runner.stats.total.num_requests > 0:
-            ratio = (self.runner.stats.total.num_failures / self.runner.stats.total.num_requests)
+        # --------------------------------------
+        # FT   : 10/s
+        # Milo :  1/s
+        #---------------------------------------
 
-        user_count = self.get_current_user_count()
+        # Spawn users for ProfileUser1
+        if int(self.get_run_time() % 2) == 0:
+            return (self.get_current_user_count() + 10 , 10, [ProfilUser1])
 
-        # decrease load (quickly)
-        if ratio > 0.8:
-            print(f"[tick] (warning) stats ratio > 0.8 : {ratio}")
-            user_count -= (self.user_count_leap / 2)
-            if user_count <= 0:
-                user_count = 1
-            return (user_count, self.user_spawn_rate, self.users_handlers)
+        # Spawn users for ProfileUser2
+        else:
+            return (self.get_current_user_count() + 1, 1, [ProfilUser2])
 
-        # increase load (slowly)
-        user_count += self.user_count_leap
-        return (user_count, self.user_spawn_rate, self.users_handlers)

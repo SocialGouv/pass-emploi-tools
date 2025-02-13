@@ -1,10 +1,10 @@
 from locust import HttpUser
-
+from os import getenv
 
 class ProfilUser(HttpUser):
 
-    user_id = None
-    token   = None
+    user_id    = None
+    user_token = None
 
     def on_start(self):
         self.client.user_id    = self.user_id
@@ -12,5 +12,7 @@ class ProfilUser(HttpUser):
         self.client.headers = {
             "Authorization": f"Bearer {self.client.user_token}"
         }
-        self.client.headers["accept"] = "*/*"
+
+    def getenv(self, key=None, defaultvalue=None):
+        return getenv(key, defaultvalue)
 

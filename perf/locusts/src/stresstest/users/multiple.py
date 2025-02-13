@@ -1,5 +1,3 @@
-import os
-
 from stresstest.users import ProfilUser
 from stresstest.tasks.ft import (TasksUserFT, TasksUserFT_POST)
 from stresstest.tasks.milo import TasksUserMILO
@@ -12,8 +10,8 @@ class ProfilUserFT(ProfilUser):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.user_id    = os.getenv("USER_ID")
-        self.user_token = os.getenv("USER_TOKEN")
+        self.user_id    = self.getenv("USER_ID")
+        self.user_token = self.getenv("USER_TOKEN")
 
 
 # Define Profil for User MILO
@@ -23,6 +21,6 @@ class ProfilUserMILO(ProfilUser):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.user_id    = os.getenv("USER_ID_MILO")
-        self.user_token = os.getenv("USER_TOKEN_MILO")
+        self.user_id    = self.getenv("USER_ID_MILO")
+        self.user_token = self.getenv("USER_TOKEN_MILO")
 

@@ -9,11 +9,18 @@ class BaseTaskSet:
     def shoot(self, url, name=None, traceback=None):
         if name is None:
             name = url
-        with self.client.get(url, catch_response=True, name=name) as response:
-            print(f"[DEBUG] shoot {url}")
+        with self.client.get(
+            url=url,
+            catch_response=True,
+            name=name,
+            headers=self.client.headers
+        ) as response:
+            # print(f"[DEBUG] shoot {url}")
             if traceback is not None:
                 traceback(response)
             return response
+
+    ## TODO : wrapper pour post()
 
     # TODO : need a refactoring
     # Maybe switch to Error 5xx for failure()

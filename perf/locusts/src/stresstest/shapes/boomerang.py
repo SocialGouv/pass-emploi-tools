@@ -19,6 +19,10 @@ class APILoadShape(LoadTestShape):
     user_spawn_rate = 1
     user_spawn_incr = 2
 
+    """
+    time_limit = 20
+    spawn_rate = 20
+    """
 
     def __init__(self):
         print("calculating user_spawn_rate")

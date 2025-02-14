@@ -13,16 +13,10 @@ class TasksUser(BaseTaskSet, TaskSet):
 
     @task
     @tag("ft")
+    @tag("noapi")
     def detail(self):
         name = f"/jeunes/{self.client.user_id}"
         url  = f"/jeunes/{self.client.user_id}"
-        self.shoot(url=url, name=name, traceback=self.traceback)
-
-    @task
-    @tag("ft")
-    def accueil(self):
-        name = f"/jeunes/{self.client.user_id}/pole-emploi/accueil"
-        url  = f"/jeunes/{self.client.user_id}/pole-emploi/accueil?maintenant=2025-01-01"
         self.shoot(url=url, name=name, traceback=self.traceback)
 
     @task
@@ -51,31 +45,11 @@ class TasksUser_Extension(BaseTaskSet, TaskSet):
 
     @task
     @tag("ft")
-    def favoris(self):
-        name = f"/jeunes/:id/favoris/"
-        url  = f"/jeunes/{self.client.user_id}/favoris"
-        self.shoot(url=url, name=name, traceback=self.traceback)
-
-    @task
-    @tag("ft")
-    def recherches(self):
-        name = f"/jeunes/:id/recherches"
-        url  = f"/jeunes/{self.client.user_id}/recherches?avecGeometrie=true"
-        self.shoot(url=url, name=name, traceback=self.traceback)
-
-    @task
-    @tag("ft")
     def recherches_suggestions(self):
         name = f"/jeunes/:id/recherches/suggestions"
         url  = f"/jeunes/{self.client.user_id}/recherches/suggestions"
         self.shoot(url=url, name=name, traceback=self.traceback)
 
-    @task
-    @tag("ft")
-    def pole_emploi_accueil(self):
-        name = f"/jeunes/:id/pole-emploi/accueil"
-        url  = f"/jeunes/{self.client.user_id}/pole-emploi/accueil?maintenant=2025-01-01"
-        self.shoot(url=url, name=name, traceback=self.traceback)
 
     @task
     @tag("ft")
@@ -89,6 +63,35 @@ class TasksUser_Extension(BaseTaskSet, TaskSet):
     def pole_emploi_idp_token(self):
         name = f"/jeunes/:id/pole-emploi/idp-token"
         url  = f"/jeunes/{self.client.user_id}/pole-emploi/idp-token"
+        self.shoot(url=url, name=name, traceback=self.traceback)
+
+
+class TasksUser_Overload(BaseTaskSet, TaskSet):
+    @task
+    @tag("ft")
+    def accueil(self):
+        name = f"/jeunes/{self.client.user_id}/pole-emploi/accueil"
+        url  = f"/jeunes/{self.client.user_id}/pole-emploi/accueil?maintenant=2025-01-01"
+        self.shoot(url=url, name=name, traceback=self.traceback)
+
+
+"""
+    This class contains all endpoints which overload API
+"""
+class TasksUser_Overload_Highest(BaseTaskSet, TaskSet):
+
+    @task
+    @tag("ft")
+    def favoris(self):
+        name = f"/jeunes/:id/favoris/"
+        url  = f"/jeunes/{self.client.user_id}/favoris"
+        self.shoot(url=url, name=name, traceback=self.traceback)
+
+    @task
+    @tag("ft")
+    def recherches(self):
+        name = f"/jeunes/:id/recherches"
+        url  = f"/jeunes/{self.client.user_id}/recherches?avecGeometrie=true"
         self.shoot(url=url, name=name, traceback=self.traceback)
 
 
@@ -115,7 +118,7 @@ class TasksUser_POST(BaseTaskSet, TaskSet):
             "origineNom": "string",
             "origineLogo": "string"
         }
-        with self.client.post(url, json=data, catch_response=True, name=name) as response:
+        with self.client.post(url, json=data, catch_response=True, name=name, headers=self.client.headers) as response:
             self.traceback(response)
 
     @task
@@ -140,7 +143,7 @@ class TasksUser_POST(BaseTaskSet, TaskSet):
                 "rayon": 0
             }
         }
-        with self.client.post(url, json=data, catch_response=True, name=name) as response:
+        with self.client.post(url, json=data, catch_response=True, name=name, headers=self.client.headers) as response:
             self.traceback(response)
 
 

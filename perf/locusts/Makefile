@@ -7,7 +7,7 @@ install:
 
 start:
 	$(MAKE) install
-	. $(VENV_DIR)/bin/activate && locust -f src/ft.py --host=$(HOST)
+	. $(VENV_DIR)/bin/activate && locust -f src/app.ft.py --host=$(HOST)
 
 start-local:
 	$(MAKE) start HOST=http://127.0.0.1:5000

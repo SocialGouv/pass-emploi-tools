@@ -1,7 +1,7 @@
-from locust import HttpUser
+from locust import FastHttpUser
 from os import getenv
 
-class ProfilUser(HttpUser):
+class ProfilUser(FastHttpUser):
 
     user_id    = None
     user_token = None

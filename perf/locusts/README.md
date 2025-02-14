@@ -52,7 +52,11 @@ source .env
 ### Using web UI
 
 ```sh
-locust -f src/app.py --host http://127.0.0.1:5000/
+locust -f src/ft.py
+or 
+locust -f src/ft.extension.py
+or 
+locust -f src/milo.py
 ```
 
 and open a browser tab to http://0.0.0.0:8089/
@@ -62,6 +66,9 @@ and open a browser tab to http://0.0.0.0:8089/
 ```sh
 locust -f src/app.py --host http://127.0.0.1:5000/ --headless
 ```
+
+`--host` is used only to defined the target
+
 
 ----
 
@@ -110,6 +117,8 @@ class MyTasks(BaseTaskSet, TaskSet):
 
 Note: `BaseTaskSet` is optional, you only need `TaskSet`.
 `BaseTaskSet` adds some helpers like `.shoot()` and `.traceback()`
+
+Note : "name" is used to give a name displayed on locust resume. It's optional.
 
 Only with these, you can now create a main locustfile which includes all of this classes :
 

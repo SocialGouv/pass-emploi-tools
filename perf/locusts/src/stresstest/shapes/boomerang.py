@@ -1,5 +1,12 @@
 from locust import LoadTestShape
 
+#
+#   LoadShape Boomerang
+#   -------------------
+#   Increase the numbers of users until we reach a fail ratio
+#   Then we decrease the number of users to calm down the stresstest
+#   The picture is like a boomerang shape :)
+#
 
 class APILoadShape(LoadTestShape):
 

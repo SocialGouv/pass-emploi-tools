@@ -32,7 +32,7 @@ class APILoadShape(LoadTestShape):
         print(f"[tick] stats num requests : {self.runner.stats.total.num_requests}")
         print(f"[tick] stats num failures : {self.runner.stats.total.num_failures}")
 
-        if self.get_current_user_count() > 50:
+        if self.get_current_user_count() > 400:
             return (self.get_current_user_count(), 1)
 
         return (self.get_current_user_count() + 10 , 100)

@@ -7,11 +7,11 @@ class ProfilUser(ProfilUser):
 
     tasks = [
         TasksUser,
-        TasksUser_POST,
         TasksUser_Extension,
         TasksUser_Overload,
-        # TasksUser_Overload_Highest,  # ! USE WITH CAUTION !
-        # TasksUser_Platform,
+        TasksUser_Overload_Highest,  # ! USE WITH CAUTION !
+        TasksUser_POST,
+        TasksUser_Platform,
     ]
 
     def __init__(self, *args, **kwargs):

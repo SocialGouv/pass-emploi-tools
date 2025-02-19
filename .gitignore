@@ -4,6 +4,20 @@
 *.env
 perf/.env
 perf/build
-perf/.gradle
+.gradle
 *.secret
 commandes-secretes.md
+
+# Python-generated files
+__pycache__
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+.env
+.env.*
+NOTES.md

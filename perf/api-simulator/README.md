@@ -13,9 +13,9 @@ make start
 ## Configuration API Simulator 
 
 ```
-FQDN="http://127.0.0.1:8080"
+API_SIMULATOR_URL="http://127.0.0.1:8080"
 or 
-FQDN="https://myapi.passemploi.gouv.fr"   # example
+API_SIMULATOR_URL="https://myapi.passemploi.gouv.fr"   # example
 ```
 
 
